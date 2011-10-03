@@ -1,0 +1,8 @@
+.autotest
+HISTORY.markdown
+Manifest.txt
+README.markdown
+Rakefile
+bin/fnmatch
+lib/fnmatch.rb
+test/test_fnmatch.rb

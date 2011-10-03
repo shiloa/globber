@@ -26,8 +26,9 @@ This gem provides a simple wrapper around the the `fnmatch` GNU C library. The `
 At the moment, you'll have to do this manually (until this is a gem)
 
 Someday, perhaps this:
+
 ```ruby
-  gem install fnmatch
+gem install fnmatch
 ```
 
 ## USE:
