@@ -27,8 +27,26 @@ At the moment, you'll have to do this manually (until this is a gem)
 
 Someday, perhaps this:
 
+```sh
+$ gem install fnmatch
+```
+
+Until then, do it the old fashion way:
+
+```sh
+$ git clone https://github.com/shiloa/fnmatch
+$ cd fnmatch
+$ rake compile
+```
+
+## Loading:
+Promise this will get easier when I find some time.
+
 ```ruby
-gem install fnmatch
+# path to fnmatch.so file (don't include the '.so' part)
+require 'path/to/fnmatch/lib/fnmatch/fnmatch'
+
+# go crazy.
 ```
 
 ## USE:
@@ -49,14 +67,15 @@ FNMatch.fnmatch_any_pat('john', ['hn', 'boe',  'pi*p']) # => false
 # you could also do this with a single pattern and a list of strings
 FNMatch.fnmatch_any_str('*hn', ['john', 'sam', 'jeeves']) # => true
 FNMatch.fnmatch_any_str('*hn', ['amy', 'sue',  'sally'])  # => false
-
 ```
+## DEV:
+Feel free to fork, knife or spoon this repo any way you see fit (keep it G-rated, though). Don't judge me based on the code, I'm generally a nice guy.
 
 ## LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2011 FIX
+Copyright (c) 2011 
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
