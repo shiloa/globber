@@ -1,5 +1,5 @@
 require "test/unit"
-require "fnmatch/fnmatch"
+require "fnmatch"
 
 class TestFnmatch < Test::Unit::TestCase
 
