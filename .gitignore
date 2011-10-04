@@ -4,4 +4,5 @@
 *.o
 *.so
 tmp/**
-
+Gemfile.lock
+README.EXT

@@ -8,7 +8,7 @@ Hoe.spec 'fnmatch' do
   developer('Shilo Ayalon', 'shiloayalon@gmail.com')
 
   self.readme_file   = 'README.markdown'
-  self.history_file  = 'HISTORY.markdown'
+  #self.history_file  = 'HISTORY.markdown'
   #self.extra_rdoc_files  = FileList['*.rdoc']
   self.extra_dev_deps << ['rake-compiler', '>= 0']
   self.spec_extras = { :extensions => ["ext/fnmatch/extconf.rb"] }

@@ -17,16 +17,87 @@
 // ~~~~~~~~~~~~~~~~~~~~
 
 //
+// return the type of a value as a cString
+//
+const char * rb_type_name(VALUE val)
+{
+  const char * type;
+
+  switch( TYPE(val) ) {
+    case T_OBJECT:
+      type = "ordinary object";
+      break;
+    case T_CLASS:
+      type = "class";
+      break;
+    case T_MODULE:	
+      type = "module";
+      break;
+    case T_FLOAT:		
+      type = "floating point number";
+      break;
+    case T_STRING:	
+      type = "string";
+      break;
+    case T_REGEXP:
+      type = "regular expression";
+      break;
+    case T_ARRAY:		
+      type = "array";
+      break;
+    case T_HASH:		
+      type = "associative array";
+      break;
+    case T_STRUCT:	
+      type = "(Ruby) structure";
+      break;
+    case T_BIGNUM:	
+      type = "multi precision integer";
+      break;
+    case T_FIXNUM:	
+      type = "Fixnum";
+      break;
+    //case T_COMPLEX:       
+    //  type = "complex number";
+    //  break;
+    //case T_RATIONAL:      
+    //  type = "rational number";
+    //  break;
+    case T_FILE:		
+      type = "IO";
+      break;
+    case T_TRUE:		
+      type = "true";
+      break;
+    case T_FALSE:		
+      type = "false";
+      break;
+    case T_DATA:		
+      type = "data";
+      break;
+    case T_SYMBOL:        
+      type = "symbol";
+      break;
+    default:
+      type = "unknown";
+      break;
+  }
+}
+//
 // check the datatype of the value and
 // raise an error if it doesn't match
 //
 void check_type(VALUE val, VALUE type, const char * varname)
 {
+  const char * actual   = rb_type_name(val);
+  const char * expected = rb_type_name(type);
+  
   if ( TYPE(val) != type )
   {
-    rb_raise(rb_eTypeError, "value provided for %s is invalid!", varname);
+    rb_raise(rb_eTypeError, "value provided for %s is invalid (got %s, expected %s)!", varname, actual, expected);
   }
 }
+
 
 // ~~~~~~~~~~~~~~~~~~~~
 // Module functions
@@ -44,6 +115,10 @@ void check_type(VALUE val, VALUE type, const char * varname)
 //
 static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 {
+  // sanity
+  check_type(str, T_STRING, "str");
+  check_type(pat, T_STRING, "pat");
+
 	// same for the string
 	const char * string  = RSTRING_PTR( str );
 
@@ -70,6 +145,10 @@ static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 //
 static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 {
+  // sanity
+  check_type(str, T_STRING, "str");
+  check_type(pat, T_STRING, "pat");
+
 	return fnm_match(self, str, pat);
 }
 
