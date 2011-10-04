@@ -11,14 +11,35 @@
 // hack
 # define FNM_IGNORE_CASE (1 << 4)
 
+
+// ~~~~~~~~~~~~~~~~~~~~
+// utility functions
+// ~~~~~~~~~~~~~~~~~~~~
+
+//
+// check the datatype of the value and
+// raise an error if it doesn't match
+//
+void check_type(VALUE val, VALUE type, const char * varname)
+{
+  if ( TYPE(val) != type )
+  {
+    rb_raise(rb_eTypeError, "value provided for %s is invalid!", varname);
+  }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~
+// Module functions
+// ~~~~~~~~~~~~~~~~~~~~
+
 // Match against a single pattern
 // USE:
 // >> require 'fnmatch'
-// >> FNMatch.fnmatch('john', '*hn')
+// >> FNMatch.match('john', '*hn')
 // => true
-// >> FNMatch.fnmatch('johnny', 'hn')
+// >> FNMatch.match('johnny', 'hn')
 // => false
-// >> FNMatch.fnmatch('jim', '*hn')
+// >> FNMatch.match('jim', '*hn')
 // => false
 //
 static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
@@ -44,7 +65,7 @@ static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 // Do the same as above, but assume the first argument
 // is the glob pattern (reversed order of args):
 // >> require 'fnmatch'
-// >> FNMatch.fnmatch_r('*hn', 'john')
+// >> FNMatch.match_r('*hn', 'john')
 // => true
 //
 static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
@@ -57,13 +78,17 @@ static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 // if any match found
 // USE:
 // >> require 'fnmatch'
-// >> FNMatch.fnmatch_any_pat('john', ['*hn', '*bo*', 'am'])
+// >> FNMatch.match_any_pattern('john', ['*hn', '*bo*', 'am'])
 // => true
-// >> FNMatch.fnmatch_any_pat('jack', ['*hn', '*bo*', 'am'])
+// >> FNMatch.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
 // => false
 //
-static VALUE fnm_match_any_pat(VALUE self, VALUE str, VALUE patterns)
+static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 {
+  // sanity
+  check_type(str, T_STRING, "str");
+  check_type(patterns, T_ARRAY, "patterns");
+
   // here we assume 'patterns' is a ruby array, so we need to
   // decide how long it is and then get a pointer to the first
   // element and go through each cell to check for matches with
@@ -98,13 +123,17 @@ static VALUE fnm_match_any_pat(VALUE self, VALUE str, VALUE patterns)
 //
 // same as above, but reversed:
 // >> require 'fnmatch'
-// >> FNMatch.fnmatch_any_str('*hn', ['john', 'bill', 'bob'])
+// >> FNMatch.match_any_string('*hn', ['john', 'bill', 'bob'])
 // => true
-// >> FNMatch.fnmatch_any_str('*hn', ['jake', 'jim', 'sam'])
+// >> FNMatch.match_any_string('*hn', ['jake', 'jim', 'sam'])
 // => false
 //
-static VALUE fnm_match_any_str(VALUE self, VALUE pattern, VALUE strings)
+static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
 {
+  // sanity
+  check_type(pattern, T_STRING, "pattern");
+  check_type(strings, T_ARRAY, "strings");
+
   int s_len = RARRAY_LEN( strings );
 
   // these are the loop counter and the match tracker
@@ -132,21 +161,25 @@ static VALUE fnm_match_any_str(VALUE self, VALUE pattern, VALUE strings)
   return Qfalse;
 }
 
-VALUE cFNMatch;
+// ~~~~~~~~~~~~~~~~~~~~
+// Core ruby stuff
+// ~~~~~~~~~~~~~~~~~~~~
+
+VALUE mFNMatch;
 
 // connect everything to actual Ruby
 void Init_fnmatch()
 {
   // create a ruby class instance
-  cFNMatch = rb_define_module("FNMatch");
+  mFNMatch = rb_define_module("FNMatch");
 
   // connect the instance methods to the module
   // (accepts the method name, pointer to C implementation
   // and the number of arguments
-  rb_define_singleton_method(cFNMatch, "fnmatch"        , fnm_match        , 2);
-  rb_define_singleton_method(cFNMatch, "fnmatch_r"      , fnm_match_r      , 2);
-  rb_define_singleton_method(cFNMatch, "fnmatch_any_pat", fnm_match_any_pat, 2);
-  rb_define_singleton_method(cFNMatch, "fnmatch_any_str", fnm_match_any_str, 2);
+  rb_define_singleton_method(mFNMatch, "match"            , fnm_match            , 2);
+  rb_define_singleton_method(mFNMatch, "match_r"          , fnm_match_r          , 2);
+  rb_define_singleton_method(mFNMatch, "match_any_pattern", fnm_match_any_pattern, 2);
+  rb_define_singleton_method(mFNMatch, "match_any_string" , fnm_match_any_string , 2);
 }
 
 

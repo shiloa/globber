@@ -1,14 +1,16 @@
 # fnmatch
 
-Perform string matching with glob syntax.
+Perform string matching with glob syntax. 
 
 ## DESCRIPTION:
 
 This gem provides a simple wrapper around the the `fnmatch` GNU C library. The `fnmatch` lib provides simple tools to find so called "glob" syntax matches on strings. 
 
+Still *VERY* immature, so don't use in production unless you have nothing to lose.
+
 ## FEATURES/PROBLEMS:
 
-* Currently supports only case insensitive search. Future flags will be added to support all native options of the C lib.
+* Currently supports only case insensitive search. Hopefully, module flags will be added soon to support all native options of the C lib.
 
 ## TODO:
 
@@ -54,20 +56,21 @@ require 'path/to/fnmatch/lib/fnmatch/fnmatch'
 require 'fnmatch'
 
 # match a single string with a glob pattern
-FNMatch.fnmatch('john', '*hn') # => true
-FNMatch.fnmatch('john', 'hn')  # => false
+FNMatch.match('john', '*hn') # => true
+FNMatch.match('john', 'hn')  # => false
 
 # this goes the other way too
-FNMatch.fnmatch_r('*hn', 'john') # => true
+FNMatch.match_r('*hn', 'john') # => true
 
 # match a single string with a list of patterns
-FNMatch.fnmatch_any_pat('john', ['*hn', 'boe', 'pi*p']) # => true
-FNMatch.fnmatch_any_pat('john', ['hn', 'boe',  'pi*p']) # => false
+FNMatch.match_any_pattern('john', ['*hn', 'boe', 'pi*p']) # => true
+FNMatch.match_any_pattern('john', ['hn', 'boe',  'pi*p']) # => false
 
 # you could also do this with a single pattern and a list of strings
-FNMatch.fnmatch_any_str('*hn', ['john', 'sam', 'jeeves']) # => true
-FNMatch.fnmatch_any_str('*hn', ['amy', 'sue',  'sally'])  # => false
+FNMatch.match_any_string('*hn', ['john', 'sam', 'jeeves']) # => true
+FNMatch.match_any_string('*hn', ['amy', 'sue',  'sally'])  # => false
 ```
+
 ## DEV:
 Feel free to fork, knife or spoon this repo any way you see fit (keep it G-rated, though). Don't judge me based on the code, I'm generally a nice guy.
 
