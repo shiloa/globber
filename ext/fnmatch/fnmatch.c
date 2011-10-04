@@ -1,6 +1,6 @@
 //
 // This small extension wraps the fnmatch C library,
-// to provide simple string matching.
+// to provide simple string matching with glob syntax.
 //
 
 #include <stdio.h>
@@ -260,7 +260,3 @@ void Init_fnmatch()
   rb_define_singleton_method(mFNMatch, "match_any_pattern", fnm_match_any_pattern, 2);
   rb_define_singleton_method(mFNMatch, "match_any_string" , fnm_match_any_string , 2);
 }
-
-
-
-
