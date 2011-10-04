@@ -6,7 +6,9 @@ Perform string matching with glob syntax.
 
 This gem provides a simple wrapper around the the `fnmatch` GNU C library. The `fnmatch` lib provides simple tools to find so called "glob" syntax matches on strings. 
 
-Still *VERY* immature, so don't use in production unless you have nothing to lose.
+<div style="display: block; color: red;">
+  This code is still <b>VERY</b> immature, so don't use in production unless you have nothing to lose.
+</div>
 
 ## FEATURES/PROBLEMS:
 
