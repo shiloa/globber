@@ -17,7 +17,6 @@ describe FNMatch do
 				FNMatch.match('john', '*hn').should  == true
 				FNMatch.match('john', '*h*n').should == true
 				FNMatch.match('john like amy', '*like*').should == true
-
 			end
 
 			it "should return false when the given pattern doesn't exist in the input string" do
@@ -25,6 +24,15 @@ describe FNMatch do
 				FNMatch.match('john', '*xy*').should == false
 				FNMatch.match('john hates sam', 'xyz').should == false
 			end
+
+      it "should properly account for module flags" do
+        FNMatch.match('john', '*HN', FNMatch::FNM_IGNORE_CASE).should  == true
+      end
+
+      it "should raise TypeError when improper parameters are provided" do
+        lambda { FNMatch.match('john', 1) }.should raise_error(TypeError)
+        lambda { FNMatch.match(Object.new, -10) }.should raise_error(TypeError)
+      end
 		end
 
 		describe '#match_r' do
@@ -39,6 +47,11 @@ describe FNMatch do
 				FNMatch.match_r('*xy*', 'john').should == false
 				FNMatch.match_r('xyz', 'john hates sam').should == false
 			end
+
+      it "should raise TypeError when improper parameters are provided" do
+        lambda { FNMatch.match_r(/blah/i, 1) }.should raise_error(TypeError)
+        lambda { FNMatch.match_r(Object.new, -10) }.should raise_error(TypeError)
+      end
 		end
 
 		describe '#match_any_pattern' do
@@ -53,6 +66,11 @@ describe FNMatch do
 				FNMatch.match_any_pattern('john', ['hn', 'oh',  'pi*p']).should  == false
 				FNMatch.match_any_pattern('john hates sam', ['hn', 'oh',  'pi*p']).should  == false
 			end
+
+      it "should raise TypeError when improper parameters are provided" do
+        lambda { FNMatch.match_any_pattern(/blah/i, 1) }.should raise_error(TypeError)
+        lambda { FNMatch.match_any_pattern(Object.new, {}) }.should raise_error(TypeError)
+      end
 		end
 
 		describe '#match_any_string' do
@@ -67,6 +85,11 @@ describe FNMatch do
 				FNMatch.match_any_string('my', ['amy', 'sue',  'sally']).should  == false
 				FNMatch.match_any_string('sally misses sue', ['amy', 'sue',  'sally']).should == false
 			end
+
+      it "should raise TypeError when improper parameters are provided" do
+        lambda { FNMatch.match_any_string(/blah/i, 1) }.should raise_error(TypeError)
+        lambda { FNMatch.match_any_string(Object.new, {}) }.should raise_error(TypeError)
+      end
 		end
 
 	end # matching functions

@@ -9,7 +9,8 @@
 #include "ruby.h"
 
 // hack
-# define FNM_IGNORE_CASE (1 << 4)
+# define FNM_IGNORE_CASE ( 1 << 4 )
+# define DEFAULT_FLAG    FNM_IGNORE_CASE
 
 
 // ~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +104,7 @@ void check_type(VALUE val, long type, const char * varname)
 
 
 // ~~~~~~~~~~~~~~~~~~~~
-// Module functions
+// Module functions)
 // ~~~~~~~~~~~~~~~~~~~~
 
 // Match against a single pattern
@@ -116,11 +117,31 @@ void check_type(VALUE val, long type, const char * varname)
 // >> FNMatch.match('jim', '*hn')
 // => false
 //
-static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
+//static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
+static VALUE fnm_match(VALUE self, VALUE args)
 {
+  // variable holders
+  VALUE str, pat, flags;
+
+  long len = RARRAY_LEN(args);
+
+  // extract arguments
+  if ( len > 3 || len < 2 ) {
+    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
+  } else if ( len == 2 ) {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = INT2NUM(DEFAULT_FLAG);
+  } else {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = rb_ary_entry(args, 2);
+  }
+
   // sanity
-  check_type(str, T_STRING, "input string");
-  check_type(pat, T_STRING, "glob pattern");
+  check_type(str  , T_STRING, "input string");
+  check_type(pat  , T_STRING, "glob pattern");
+  check_type(flags, T_FIXNUM, "module flags");
 
 	// same for the string
 	const char * string  = RSTRING_PTR( str );
@@ -129,7 +150,7 @@ static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
   const char * pattern = RSTRING_PTR( pat );
 
   // perform matching based on the preferred direction
-	int	match = fnmatch( pattern, string, FNM_IGNORE_CASE );
+	int	match = fnmatch( pattern, string, DEFAULT_FLAG );
 	
   // fnmatch returns 0 if glob match was found
   if ( match == 0 ) {
@@ -146,13 +167,36 @@ static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 // >> FNMatch.match_r('*hn', 'john')
 // => true
 //
-static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
+//static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
+static VALUE fnm_match_r(VALUE self, VALUE args)
 {
-  // sanity
-  check_type(str, T_STRING, "input string");
-  check_type(pat, T_STRING, "glob pattern");
+  // variable holders
+  VALUE str, pat, flags, rargs;
 
-	return fnm_match(self, str, pat);
+  long len = RARRAY_LEN(args);
+
+  // extract arguments
+  if ( len > 3 || len < 2 ) {
+    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
+  } else if ( len == 2 ) {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = INT2NUM(DEFAULT_FLAG);
+  } else {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = rb_ary_entry(args, 2);
+  }
+
+  // sanity
+  check_type(str  , T_STRING, "input string");
+  check_type(pat  , T_STRING, "glob pattern");
+  check_type(flags, T_FIXNUM, "module flags");
+
+  // create a new args array with str and pat replaced
+  rargs = rb_ary_new3(3, pat, str, flags);
+
+  return fnm_match(self, rargs);
 }
 
 //
@@ -165,11 +209,33 @@ static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 // >> FNMatch.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
 // => false
 //
-static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
-{
+static VALUE fnm_match_any_pattern(VALUE self, VALUE args)
+//static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
+{  
+  
+  // variable holders
+  VALUE str, patterns, flags, nargs;
+
+  long len = RARRAY_LEN(args);
+
+  // extract arguments
+  if ( len > 3 || len < 2 ) {
+    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
+  } else if ( len == 2 ) {
+    str      = rb_ary_entry(args, 0);
+    patterns = rb_ary_entry(args, 1);
+    flags    = INT2NUM(DEFAULT_FLAG);
+  } else {
+    str      = rb_ary_entry(args, 0);
+    patterns = rb_ary_entry(args, 1);
+    flags    = rb_ary_entry(args, 2);
+  }
+
+
   // sanity
-  check_type(str, T_STRING, "input string");
-  check_type(patterns, T_ARRAY, "pattern list");
+  check_type(str     , T_STRING, "input string");
+  check_type(patterns, T_ARRAY , "pattern list");
+  check_type(flags   , T_FIXNUM, "module flags");
 
   // here we assume 'patterns' is a ruby array, so we need to
   // decide how long it is and then get a pointer to the first
@@ -190,8 +256,9 @@ static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 		// the current pattern
     pattern = p_arr[i];
     
+
     // perform the actual matching
-		match = fnm_match(self, str, pattern);
+		match = fnm_match(self, rb_ary_new3(3, str, pattern, flags));
 
     // fnmatch returns 0 if glob match was found
     if ( match == Qtrue ) {
@@ -210,11 +277,32 @@ static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 // >> FNMatch.match_any_string('*hn', ['jake', 'jim', 'sam'])
 // => false
 //
-static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
+//static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
+static VALUE fnm_match_any_string(VALUE self, VALUE args)
 {
+  // variable holders
+  VALUE strings, pattern, flags, nargs;
+
+  long len = RARRAY_LEN(args);
+
+  // extract arguments
+  if ( len > 3 || len < 2 ) {
+    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
+  } else if ( len == 2 ) {
+    pattern = rb_ary_entry(args, 0);
+    strings = rb_ary_entry(args, 1);
+    flags   = INT2NUM(DEFAULT_FLAG);
+  } else {
+    pattern = rb_ary_entry(args, 0);
+    strings = rb_ary_entry(args, 1);
+    flags   = rb_ary_entry(args, 2);
+  }
+
+
   // sanity
   check_type(pattern, T_STRING, "input pattern");
-  check_type(strings, T_ARRAY, "string list");
+  check_type(flags  , T_FIXNUM, "module flags");
+  check_type(strings, T_ARRAY , "string list");
 
   int s_len = RARRAY_LEN( strings );
 
@@ -232,7 +320,7 @@ static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
     string = s_arr[i];
     
     // perform the actual matching
-		match = fnm_match(self, string, pattern);
+		match = fnm_match( self, rb_ary_new3(3, string, pattern, flags) );
 
     // fnmatch returns 0 if glob match was found
     if ( match == Qtrue ) {
@@ -258,8 +346,8 @@ void Init_fnmatch()
   // connect the instance methods to the module
   // (accepts the method name, pointer to C implementation
   // and the number of arguments
-  rb_define_singleton_method(mFNMatch, "match"            , fnm_match            , 2);
-  rb_define_singleton_method(mFNMatch, "match_r"          , fnm_match_r          , 2);
-  rb_define_singleton_method(mFNMatch, "match_any_pattern", fnm_match_any_pattern, 2);
-  rb_define_singleton_method(mFNMatch, "match_any_string" , fnm_match_any_string , 2);
+  rb_define_singleton_method(mFNMatch, "match"            , fnm_match            , -2);
+  rb_define_singleton_method(mFNMatch, "match_r"          , fnm_match_r          , -2);
+  rb_define_singleton_method(mFNMatch, "match_any_pattern", fnm_match_any_pattern, -2);
+  rb_define_singleton_method(mFNMatch, "match_any_string" , fnm_match_any_string , -2);
 }

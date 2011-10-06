@@ -26,5 +26,5 @@ module FNMatch
 
   # If this flag (a GNU extension) is set, the pattern is 
   # matched case-insensitively. 
-  FNM_CASEFOLD = ( 1 << 4 )
+  FNM_IGNORE_CASE = ( 1 << 4 )
 end
