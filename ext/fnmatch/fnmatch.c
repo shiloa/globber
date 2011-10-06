@@ -19,11 +19,11 @@
 //
 // return the type of a value as a cString
 //
-const char * rb_type_name(VALUE val)
+const char * rb_type_name(long val)
 {
   const char * type;
 
-  switch( TYPE(val) ) {
+  switch( val ) {
     case T_OBJECT:
       type = "ordinary object";
       break;
@@ -82,14 +82,17 @@ const char * rb_type_name(VALUE val)
       type = "unknown";
       break;
   }
+
+  // duh
+  return type;
 }
 //
 // check the datatype of the value and
 // raise an error if it doesn't match
 //
-void check_type(VALUE val, VALUE type, const char * varname)
+void check_type(VALUE val, long type, const char * varname)
 {
-  const char * actual   = rb_type_name(val);
+  const char * actual   = rb_type_name(TYPE(val));
   const char * expected = rb_type_name(type);
   
   if ( TYPE(val) != type )
@@ -116,8 +119,8 @@ void check_type(VALUE val, VALUE type, const char * varname)
 static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 {
   // sanity
-  check_type(str, T_STRING, "str");
-  check_type(pat, T_STRING, "pat");
+  check_type(str, T_STRING, "input string");
+  check_type(pat, T_STRING, "glob pattern");
 
 	// same for the string
 	const char * string  = RSTRING_PTR( str );
@@ -146,8 +149,8 @@ static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 {
   // sanity
-  check_type(str, T_STRING, "str");
-  check_type(pat, T_STRING, "pat");
+  check_type(str, T_STRING, "input string");
+  check_type(pat, T_STRING, "glob pattern");
 
 	return fnm_match(self, str, pat);
 }
@@ -165,8 +168,8 @@ static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 {
   // sanity
-  check_type(str, T_STRING, "str");
-  check_type(patterns, T_ARRAY, "patterns");
+  check_type(str, T_STRING, "input string");
+  check_type(patterns, T_ARRAY, "pattern list");
 
   // here we assume 'patterns' is a ruby array, so we need to
   // decide how long it is and then get a pointer to the first
@@ -210,8 +213,8 @@ static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
 {
   // sanity
-  check_type(pattern, T_STRING, "pattern");
-  check_type(strings, T_ARRAY, "strings");
+  check_type(pattern, T_STRING, "input pattern");
+  check_type(strings, T_ARRAY, "string list");
 
   int s_len = RARRAY_LEN( strings );
 
