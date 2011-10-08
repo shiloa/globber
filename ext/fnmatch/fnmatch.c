@@ -117,7 +117,6 @@ void check_type(VALUE val, long type, const char * varname)
 // >> FNMatch.match('jim', '*hn')
 // => false
 //
-//static VALUE fnm_match(VALUE self, VALUE str, VALUE pat)
 static VALUE fnm_match(VALUE self, VALUE args)
 {
   // variable holders
@@ -167,7 +166,6 @@ static VALUE fnm_match(VALUE self, VALUE args)
 // >> FNMatch.match_r('*hn', 'john')
 // => true
 //
-//static VALUE fnm_match_r(VALUE self, VALUE pat, VALUE str)
 static VALUE fnm_match_r(VALUE self, VALUE args)
 {
   // variable holders
@@ -210,7 +208,6 @@ static VALUE fnm_match_r(VALUE self, VALUE args)
 // => false
 //
 static VALUE fnm_match_any_pattern(VALUE self, VALUE args)
-//static VALUE fnm_match_any_pattern(VALUE self, VALUE str, VALUE patterns)
 {  
   
   // variable holders
@@ -277,7 +274,6 @@ static VALUE fnm_match_any_pattern(VALUE self, VALUE args)
 // >> FNMatch.match_any_string('*hn', ['jake', 'jim', 'sam'])
 // => false
 //
-//static VALUE fnm_match_any_string(VALUE self, VALUE pattern, VALUE strings)
 static VALUE fnm_match_any_string(VALUE self, VALUE args)
 {
   // variable holders

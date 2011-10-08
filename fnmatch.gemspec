@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.require_paths << 'ext'
   s.require_paths << 'lib'
 
-  s.post_install_message  = "This is my first gem, so be nice.. And careful."
+  s.post_install_message  = "\nThis is my first gem, so be nice.. And careful.\n\n"
   s.required_ruby_version = '>= 1.8.7'
 
   s.test_files = Dir.glob('spec/*_spec.rb')
