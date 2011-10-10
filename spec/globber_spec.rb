@@ -35,25 +35,6 @@ describe Globber do
       end
 		end
 
-		describe '#match_r' do
-			it "should return true when the given pattern exists in the input string" do
-				Globber.match_r('*hn', 'john').should  == true
-				Globber.match_r('*h*n', 'john').should == true
-				Globber.match_r('*like*', 'john likes amy').should == true
-			end
-
-			it "should return false when the given pattern doesn't exist in the input string" do
-				Globber.match_r('hn', 'john').should   == false
-				Globber.match_r('*xy*', 'john').should == false
-				Globber.match_r('xyz', 'john hates sam').should == false
-			end
-
-      it "should raise TypeError when improper parameters are provided" do
-        lambda { Globber.match_r(/blah/i, 1) }.should raise_error(TypeError)
-        lambda { Globber.match_r(Object.new, -10) }.should raise_error(TypeError)
-      end
-		end
-
 		describe '#match_any_pattern' do
 			it "should return true when there's at least one matching pattern in the list" do
 				Globber.match_any_pattern('john', ['*hn', 'boe', 'pi*p']).should  == true

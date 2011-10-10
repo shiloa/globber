@@ -334,7 +334,7 @@ static VALUE fnm_find_string(VALUE self, VALUE args)
 VALUE mGlobber;
 
 // connect everything to actual Ruby
-void Init_fnmatch()
+void Init_globber()
 {
   // create a ruby class instance
   mGlobber = rb_define_module("Globber");

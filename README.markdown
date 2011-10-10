@@ -61,9 +61,6 @@ require 'globber'
 Globber.match('john', '*hn') # => true
 Globber.match('john', 'hn')  # => false
 
-# this goes the other way too
-Globber.match_r('*hn', 'john') # => true
-
 # match a single string with a list of patterns
 Globber.match_any_pattern('john', ['*hn', 'boe', 'pi*p']) # => true
 Globber.match_any_pattern('john', ['hn', 'boe',  'pi*p']) # => false

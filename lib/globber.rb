@@ -34,20 +34,6 @@ USE:
     >> Globber.match('jim', '*hn')
     => false
 
-== Globber.match_r(pattern, string, [optional-flags])
-Do the same as above, but assume the first argument
-is the glob pattern (reversed order of args):
-
-Arguments:
-  pattern - the glob pattern to match against.
-  string  - the string to check for matches.
-  flags   - optional module flags to include in the processing. 
-
-USE:
-    >> require 'globber'
-    >> Globber.match_r('*hn', 'john')
-    => true
-
 
 == Globber.match_any_pattern(string, patterns, [optional-flags])
 match a string against a list of patterns and return true if <b>any</b> match was found.
