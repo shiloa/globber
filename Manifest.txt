@@ -1,8 +1,9 @@
 .autotest
 HISTORY.markdown
+History.txt
 Manifest.txt
 README.markdown
 Rakefile
-bin/fnmatch
-lib/fnmatch.rb
-test/test_fnmatch.rb
+bin/globber
+lib/globber.rb
+spec/globber_spec.rb

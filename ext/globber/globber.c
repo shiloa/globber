@@ -23,7 +23,6 @@
 const char * rb_type_name(long val);
 void check_type(VALUE val, long type, const char * varname);
 static VALUE fnm_match(VALUE self, VALUE args);
-static VALUE fnm_match_r(VALUE self, VALUE args);
 static VALUE fnm_match_any_pattern(VALUE self, VALUE args);
 static VALUE fnm_match_any_string(VALUE self, VALUE args);
 static VALUE fnm_find_pattern(VALUE self, VALUE args);
@@ -75,12 +74,6 @@ const char * rb_type_name(long val)
     case T_FIXNUM:	
       type = "Fixnum";
       break;
-    //case T_COMPLEX:       
-    //  type = "complex number";
-    //  break;
-    //case T_RATIONAL:      
-    //  type = "rational number";
-    //  break;
     case T_FILE:		
       type = "IO";
       break;
@@ -144,45 +137,6 @@ static VALUE fnm_match(VALUE self, VALUE args)
   return Qfalse;
 }
 
-//
-// Do the same as above, but assume the first argument
-// is the glob pattern (reversed order of args):
-// >> require 'fnmatch'
-// >> Globber.match_r('*hn', 'john')
-// => true
-//
-static VALUE fnm_match_r(VALUE self, VALUE args)
-{
-  // variable holders
-  VALUE str, pat, flags, rargs;
-
-  long len = RARRAY_LEN(args);
-
-  // extract arguments
-  if ( len > 3 || len < 2 ) {
-    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
-  } else if ( len == 2 ) {
-    str   = rb_ary_entry(args, 0);
-    pat   = rb_ary_entry(args, 1);
-    flags = INT2NUM(DEFAULT_FLAG);
-  } else {
-    str   = rb_ary_entry(args, 0);
-    pat   = rb_ary_entry(args, 1);
-    flags = rb_ary_entry(args, 2);
-  }
-
-  // sanity
-  check_type(str  , T_STRING, "input string");
-  check_type(pat  , T_STRING, "glob pattern");
-  check_type(flags, T_FIXNUM, "module flags");
-
-  // create a new args array with str and pat replaced
-  rargs = rb_ary_new3(3, pat, str, flags);
-
-  return fnm_match(self, rargs);
-}
-
-//
 // match a string against a list of patterns and return true
 // if any match found
 // USE:
@@ -389,7 +343,6 @@ void Init_fnmatch()
   // (accepts the method name, pointer to C implementation
   // and the number of arguments
   rb_define_singleton_method(mGlobber, "match"            , fnm_match            , -2);
-  rb_define_singleton_method(mGlobber, "match_r"          , fnm_match_r          , -2);
   rb_define_singleton_method(mGlobber, "match_any_pattern", fnm_match_any_pattern, -2);
   rb_define_singleton_method(mGlobber, "match_any_string" , fnm_match_any_string , -2);
   rb_define_singleton_method(mGlobber, "find_pattern"     , fnm_find_pattern     , -2);
