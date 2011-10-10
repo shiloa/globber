@@ -1,4 +1,4 @@
-require 'fnmatch/fnmatch'
+require 'globber/globber'
 
 =begin rdoc
 == About
@@ -12,12 +12,12 @@ When you need to do some basic matching and regular expressions are too to expen
 
 == INSTALL
 Through rubygems - 
-    gem install fnmatch
+    gem install globber
 
 == API
 All function calls are currently called as module singleton methods.
 
-== FNMatch.match(string, pattern, [optional-flags])
+== Globber.match(string, pattern, [optional-flags])
 Match against a single pattern
 
 Arguments:
@@ -26,15 +26,15 @@ Arguments:
   flags   - optional module flags to include in the processing. 
 
 USE:
-    >> require 'fnmatch'
-    >> FNMatch.match('john', '*hn')
+    >> require 'globber'
+    >> Globber.match('john', '*hn')
     => true
-    >> FNMatch.match('johnny', 'hn')
+    >> Globber.match('johnny', 'hn')
     => false
-    >> FNMatch.match('jim', '*hn')
+    >> Globber.match('jim', '*hn')
     => false
 
-== FNMatch.match_r(pattern, string, [optional-flags])
+== Globber.match_r(pattern, string, [optional-flags])
 Do the same as above, but assume the first argument
 is the glob pattern (reversed order of args):
 
@@ -44,12 +44,12 @@ Arguments:
   flags   - optional module flags to include in the processing. 
 
 USE:
-    >> require 'fnmatch'
-    >> FNMatch.match_r('*hn', 'john')
+    >> require 'globber'
+    >> Globber.match_r('*hn', 'john')
     => true
 
 
-== FNMatch.match_any_pattern(string, patterns, [optional-flags])
+== Globber.match_any_pattern(string, patterns, [optional-flags])
 match a string against a list of patterns and return true if <b>any</b> match was found.
 
 Arguments:
@@ -58,14 +58,14 @@ Arguments:
   flags    - optional module flags to include in the processing. 
 
 USE:
-    >> require 'fnmatch'
-    >> FNMatch.match_any_pattern('john', ['*hn', '*bo*', 'am'])
+    >> require 'globber'
+    >> Globber.match_any_pattern('john', ['*hn', '*bo*', 'am'])
     => true
-    >> FNMatch.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
+    >> Globber.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
     => false
 
 
-== FNMatch.match_any_string(pattern, strings, [optional-flags])
+== Globber.match_any_string(pattern, strings, [optional-flags])
 same as above, but reversed (one pattern, many strings):
   
 Arguments:
@@ -74,18 +74,18 @@ Arguments:
   flags   - optional module flags to include in the processing. 
 
 USE:
-    >> require 'fnmatch'
-    >> FNMatch.match_any_string('*hn', ['john', 'bill', 'bob'])
+    >> require 'globber'
+    >> Globber.match_any_string('*hn', ['john', 'bill', 'bob'])
     => true
-    >> FNMatch.match_any_string('*hn', ['jake', 'jim', 'sam'])
+    >> Globber.match_any_string('*hn', ['jake', 'jim', 'sam'])
     => false
 =end
 
-module FNMatch
+module Globber
   VERSION = '0.1.0'
 
   #****************************************
-  # fnmatch flags
+  # globber flags
   #****************************************
   
   # If this flag is set, match a slash in string only with 

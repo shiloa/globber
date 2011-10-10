@@ -1,4 +1,4 @@
-# fnmatch
+# globber
 
 Perform string matching with glob syntax. 
 
@@ -32,14 +32,14 @@ At the moment, you'll have to do this manually (until this is a gem)
 Someday, perhaps this:
 
 ```sh
-$ gem install fnmatch
+$ gem install globber
 ```
 
 Until then, do it the old fashion way:
 
 ```sh
-$ git clone https://github.com/shiloa/fnmatch
-$ cd fnmatch
+$ git clone https://github.com/shiloa/globber
+$ cd globber
 $ rake compile
 ```
 
@@ -47,30 +47,30 @@ $ rake compile
 Promise this will get easier when I find some time.
 
 ```ruby
-# path to fnmatch.so file (don't include the '.so' part)
-require 'path/to/fnmatch/lib/fnmatch/fnmatch'
+# path to globber.so file (don't include the '.so' part)
+require 'path/to/globber/lib/globber/globber'
 
 # go crazy.
 ```
 
 ## USE:
 ```ruby
-require 'fnmatch'
+require 'globber'
 
 # match a single string with a glob pattern
-FNMatch.match('john', '*hn') # => true
-FNMatch.match('john', 'hn')  # => false
+Globber.match('john', '*hn') # => true
+Globber.match('john', 'hn')  # => false
 
 # this goes the other way too
-FNMatch.match_r('*hn', 'john') # => true
+Globber.match_r('*hn', 'john') # => true
 
 # match a single string with a list of patterns
-FNMatch.match_any_pattern('john', ['*hn', 'boe', 'pi*p']) # => true
-FNMatch.match_any_pattern('john', ['hn', 'boe',  'pi*p']) # => false
+Globber.match_any_pattern('john', ['*hn', 'boe', 'pi*p']) # => true
+Globber.match_any_pattern('john', ['hn', 'boe',  'pi*p']) # => false
 
 # you could also do this with a single pattern and a list of strings
-FNMatch.match_any_string('*hn', ['john', 'sam', 'jeeves']) # => true
-FNMatch.match_any_string('*hn', ['amy', 'sue',  'sally'])  # => false
+Globber.match_any_string('*hn', ['john', 'sam', 'jeeves']) # => true
+Globber.match_any_string('*hn', ['amy', 'sue',  'sally'])  # => false
 ```
 
 ## DEV:

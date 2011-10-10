@@ -1,7 +1,14 @@
 //
 // This small extension wraps the fnmatch C library,
 // to provide simple string matching with glob syntax.
-//
+
+// -----------------------READ--THIS--PLEASE----------------------
+// Licensing note - GNU C library is distributed under the GPL.
+// I'm doing my best not to step on any toes here, so please don't
+// sue me. If there's an infringement of any kind, please contact
+// me and let me know.
+// ---------------------------------------------------------------
+
 
 #include <stdio.h>
 #include <fnmatch.h>
@@ -11,6 +18,16 @@
 // hack
 # define FNM_IGNORE_CASE ( 1 << 4 )
 # define DEFAULT_FLAG    FNM_IGNORE_CASE
+
+// function headers (h-file?.. perhaps someday).
+const char * rb_type_name(long val);
+void check_type(VALUE val, long type, const char * varname);
+static VALUE fnm_match(VALUE self, VALUE args);
+static VALUE fnm_match_r(VALUE self, VALUE args);
+static VALUE fnm_match_any_pattern(VALUE self, VALUE args);
+static VALUE fnm_match_any_string(VALUE self, VALUE args);
+static VALUE fnm_find_pattern(VALUE self, VALUE args);
+static VALUE fnm_find_string(VALUE self, VALUE args);
 
 
 // ~~~~~~~~~~~~~~~~~~~~
@@ -110,52 +127,20 @@ void check_type(VALUE val, long type, const char * varname)
 // Match against a single pattern
 // USE:
 // >> require 'fnmatch'
-// >> FNMatch.match('john', '*hn')
+// >> Globber.match('john', '*hn')
 // => true
-// >> FNMatch.match('johnny', 'hn')
+// >> Globber.match('johnny', 'hn')
 // => false
-// >> FNMatch.match('jim', '*hn')
+// >> Globber.match('jim', '*hn')
 // => false
 //
 static VALUE fnm_match(VALUE self, VALUE args)
 {
-  // variable holders
-  VALUE str, pat, flags;
-
-  long len = RARRAY_LEN(args);
-
-  // extract arguments
-  if ( len > 3 || len < 2 ) {
-    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
-  } else if ( len == 2 ) {
-    str   = rb_ary_entry(args, 0);
-    pat   = rb_ary_entry(args, 1);
-    flags = INT2NUM(DEFAULT_FLAG);
-  } else {
-    str   = rb_ary_entry(args, 0);
-    pat   = rb_ary_entry(args, 1);
-    flags = rb_ary_entry(args, 2);
-  }
-
-  // sanity
-  check_type(str  , T_STRING, "input string");
-  check_type(pat  , T_STRING, "glob pattern");
-  check_type(flags, T_FIXNUM, "module flags");
-
-	// same for the string
-	const char * string  = RSTRING_PTR( str );
-
-  // convert ruby pattern string to c type
-  const char * pattern = RSTRING_PTR( pat );
-
-  // perform matching based on the preferred direction
-	int	match = fnmatch( pattern, string, DEFAULT_FLAG );
-	
-  // fnmatch returns 0 if glob match was found
-  if ( match == 0 ) {
+  VALUE match = fnm_find_pattern(self, args);
+  if ( match != Qnil ) {
     return Qtrue;
   }
-  
+
   return Qfalse;
 }
 
@@ -163,7 +148,7 @@ static VALUE fnm_match(VALUE self, VALUE args)
 // Do the same as above, but assume the first argument
 // is the glob pattern (reversed order of args):
 // >> require 'fnmatch'
-// >> FNMatch.match_r('*hn', 'john')
+// >> Globber.match_r('*hn', 'john')
 // => true
 //
 static VALUE fnm_match_r(VALUE self, VALUE args)
@@ -202,9 +187,9 @@ static VALUE fnm_match_r(VALUE self, VALUE args)
 // if any match found
 // USE:
 // >> require 'fnmatch'
-// >> FNMatch.match_any_pattern('john', ['*hn', '*bo*', 'am'])
+// >> Globber.match_any_pattern('john', ['*hn', '*bo*', 'am'])
 // => true
-// >> FNMatch.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
+// >> Globber.match_any_pattern('jack', ['*hn', '*bo*', 'am'])
 // => false
 //
 static VALUE fnm_match_any_pattern(VALUE self, VALUE args)
@@ -269,9 +254,9 @@ static VALUE fnm_match_any_pattern(VALUE self, VALUE args)
 //
 // same as above, but reversed:
 // >> require 'fnmatch'
-// >> FNMatch.match_any_string('*hn', ['john', 'bill', 'bob'])
+// >> Globber.match_any_string('*hn', ['john', 'bill', 'bob'])
 // => true
-// >> FNMatch.match_any_string('*hn', ['jake', 'jim', 'sam'])
+// >> Globber.match_any_string('*hn', ['jake', 'jim', 'sam'])
 // => false
 //
 static VALUE fnm_match_any_string(VALUE self, VALUE args)
@@ -327,23 +312,85 @@ static VALUE fnm_match_any_string(VALUE self, VALUE args)
   return Qfalse;
 }
 
+// 
+// find the FIRST matching pattern, or nil if none found:
+// >> Globber.find_pattern('john', ['*hn', 'am*', 'jo*'])
+// => '*hn'
+// >> Globber.find_pattern('jack', ['*hn', 'am*', 'jo*'])
+// => nil
+//
+static VALUE fnm_find_pattern(VALUE self, VALUE args)
+{
+  // variable holders
+  VALUE str, pat, flags;
+
+  long len = RARRAY_LEN(args);
+
+  // extract arguments
+  if ( len > 3 || len < 2 ) {
+    rb_raise(rb_eArgError, "Accepts either 2 or 3 arguments"); 
+  } else if ( len == 2 ) {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = INT2NUM(DEFAULT_FLAG);
+  } else {
+    str   = rb_ary_entry(args, 0);
+    pat   = rb_ary_entry(args, 1);
+    flags = rb_ary_entry(args, 2);
+  }
+
+  // sanity
+  check_type(str  , T_STRING, "input string");
+  check_type(pat  , T_STRING, "glob pattern");
+  check_type(flags, T_FIXNUM, "module flags");
+
+	// same for the string
+	const char * string  = RSTRING_PTR( str );
+
+  // convert ruby pattern string to c type
+  const char * pattern = RSTRING_PTR( pat );
+
+  // perform matching based on the preferred direction
+	int	match = fnmatch( pattern, string, DEFAULT_FLAG );
+	
+  // fnmatch returns 0 if glob match was found
+  if ( match == 0 ) {
+    return pat;
+  }
+  
+  return Qnil;
+}
+
+// 
+// find the FIRST matching pattern, or nil if none found:
+// >> Globber.find_string('*hn', ['john', 'amy', 'sally'])
+// => 'john'
+// >> Globber.find_string('*hn', ['jack', 'tom', 'matt'])
+// => nil
+//
+static VALUE fnm_find_string(VALUE self, VALUE args)
+{
+  return Qnil;
+}
+
 // ~~~~~~~~~~~~~~~~~~~~
 // Core ruby stuff
 // ~~~~~~~~~~~~~~~~~~~~
 
-VALUE mFNMatch;
+VALUE mGlobber;
 
 // connect everything to actual Ruby
 void Init_fnmatch()
 {
   // create a ruby class instance
-  mFNMatch = rb_define_module("FNMatch");
+  mGlobber = rb_define_module("Globber");
 
   // connect the instance methods to the module
   // (accepts the method name, pointer to C implementation
   // and the number of arguments
-  rb_define_singleton_method(mFNMatch, "match"            , fnm_match            , -2);
-  rb_define_singleton_method(mFNMatch, "match_r"          , fnm_match_r          , -2);
-  rb_define_singleton_method(mFNMatch, "match_any_pattern", fnm_match_any_pattern, -2);
-  rb_define_singleton_method(mFNMatch, "match_any_string" , fnm_match_any_string , -2);
+  rb_define_singleton_method(mGlobber, "match"            , fnm_match            , -2);
+  rb_define_singleton_method(mGlobber, "match_r"          , fnm_match_r          , -2);
+  rb_define_singleton_method(mGlobber, "match_any_pattern", fnm_match_any_pattern, -2);
+  rb_define_singleton_method(mGlobber, "match_any_string" , fnm_match_any_string , -2);
+  rb_define_singleton_method(mGlobber, "find_pattern"     , fnm_find_pattern     , -2);
 }

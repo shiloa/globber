@@ -10,7 +10,7 @@ files = FileList['lib/**/*.rb',
                  'spec/**/*.rb'].to_a
 
 Gem::Specification.new do |s|
-  s.name         = 'fnmatch'
+  s.name         = 'globber'
   s.require_path = '.'
   s.version      = '0.1.0'
   s.summary      = "Perform simple glob syntax matching in Ruby"
@@ -24,11 +24,11 @@ Gem::Specification.new do |s|
   s.author       = "Shilo Ayalon"
   s.email        = "shiloayalon@gmail.com"
   s.files        = files
-  s.homepage     = 'http://github.com/shiloa/fnmatch'
+  s.homepage     = 'http://github.com/shiloa/globber'
   s.license      = 'MIT/X11'
  
   # whoa
-  s.extensions    << 'ext/fnmatch/extconf.rb'
+  s.extensions    << 'ext/globber/extconf.rb'
   s.require_paths << 'ext'
   s.require_paths << 'lib'
 

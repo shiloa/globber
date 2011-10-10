@@ -5,4 +5,4 @@ require 'mkmf'
 #****************************************
 # Nothing too exciting here. 
 #*****************************************
-create_makefile('fnmatch/fnmatch')
+create_makefile('globber/globber')
